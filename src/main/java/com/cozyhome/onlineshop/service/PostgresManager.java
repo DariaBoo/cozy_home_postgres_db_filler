@@ -21,8 +21,8 @@ public class PostgresManager {
 	private final PostgresBuilder builder;
 	private final ProductColorRepository productColorRepo;
 	private final InventoryRepository inventoryRepo;
-	private String createDbFile = "/create_db.sql";
-	private String createUserFile = "/create_user.sql";
+//	private String createDbFile = "/create_db.sql";
+//	private String createUserFile = "/create_user.sql";
 	private String createTablesFile = "/create_tables.sql";
 
 	public void createDataBase() {
