@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.springframework.stereotype.Component;
 
@@ -27,6 +26,8 @@ public class PostgresBuilder {
 	private final ProductColorRepository productColorRepo;
 	private final InventoryRepository inventoryRepo;
 
+	private Map<Integer, Integer> colorsQuantityConstants = new HashMap<>();
+	private Map<ProductColor, Integer> productColorQuantity = new HashMap<>();
 	private Map<String, String> colors = new HashMap<>();
 	private List<Integer> colorIndexes = new ArrayList<>();
 
@@ -38,6 +39,10 @@ public class PostgresBuilder {
 		colorIndexes.add(CellIndex.PRODUCT_COLOR_1);
 		colorIndexes.add(CellIndex.PRODUCT_COLOR_2);
 		colorIndexes.add(CellIndex.PRODUCT_COLOR_3);
+
+		colorsQuantityConstants.put(CellIndex.PRODUCT_COLOR_1, CellIndex.PRODUCT_QUANTITY_FOR_COLOR_17);
+		colorsQuantityConstants.put(CellIndex.PRODUCT_COLOR_2, CellIndex.PRODUCT_QUANTITY_FOR_COLOR_38);
+		colorsQuantityConstants.put(CellIndex.PRODUCT_COLOR_3, CellIndex.PRODUCT_QUANTITY_FOR_COLOR_59);
 	}
 
 	@Transactional
@@ -48,8 +53,17 @@ public class PostgresBuilder {
 		while (!(productSkuCode = reader.readFromExcel(rowIndex, CellIndex.PRODUCT_SKU)).isEmpty()) {
 			for (int i = 0; i < colorIndexes.size(); i++) {
 				String color = reader.readFromExcel(rowIndex, colorIndexes.get(i)).trim();
+				String quantityString = reader.readFromExcel(rowIndex, colorsQuantityConstants.get(colorIndexes.get(i))).trim();
+				Integer quantity;
+				if (quantityString.isEmpty()) {
+					quantity = 0;
+				} else {
+					quantity = Math.round(Float.parseFloat(quantityString));
+				}
+
 				if (!color.isEmpty()) {
-					doBuildProductColor(productSkuCode, color);
+					doBuildProductColor(productSkuCode, color, quantity);
+
 				}
 			}
 
@@ -66,13 +80,13 @@ public class PostgresBuilder {
 	public void buildInventory(ProductColor productColor) {
 		Inventory inventory = new Inventory();
 		inventory.setProductColor(productColor);
-		inventory.setQuantity(new Random().nextInt(7));
+		inventory.setQuantity(productColorQuantity.get(productColor));
 		inventoryRepo.save(inventory);
 		log.info("INVENTORY FOR PRODUCT_SKUCODE [" + productColor.getProductSkuCode()
 				+ "] WITH COLOR_HEX [" + productColor.getColorHex() + "]  SAVED.");
 	}
 
-	private ProductColor doBuildProductColor(String productSkuCode, String color) {
+	private ProductColor doBuildProductColor(String productSkuCode, String color, int quantity) {
 		ProductColor productColor = new ProductColor();
 		ProductColor savedProductColor = new ProductColor();
 		if (!color.isEmpty()) {
@@ -81,6 +95,7 @@ public class PostgresBuilder {
 				productColor.setProductSkuCode(productSkuCode);
 				productColor.setColorHex(colorHex);
 				savedProductColor = productColorRepo.save(productColor);
+				productColorQuantity.put(savedProductColor, quantity);
 				log.info("PRODUCT_COLOR [SKUCODE:" + productSkuCode + ",HEX:" + colorHex + "] SAVED.");
 			}
 		}
