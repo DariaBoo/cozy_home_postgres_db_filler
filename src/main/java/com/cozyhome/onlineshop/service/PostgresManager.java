@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Component
 public class PostgresManager {
+	
 	private final SqlExecuter executer;
 	private final PostgresBuilder builder;
 	private final ProductColorRepository productColorRepo;
