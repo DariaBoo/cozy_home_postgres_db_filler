@@ -103,6 +103,5 @@ public class PostgresBuilder {
 		BasketRecord basketRecordSaved = shoppingCartRepo.save(basketRecordToSave);
 		log.info("BASKET RECORD WITH SKU CODE [{}] AND COLOR HEX [{}] SAVED.", basketRecordSaved.getProductColor().getProductSkuCode(),
 				basketRecordSaved.getProductColor().getColorHex());
-	}
-	
+	}	
 }
