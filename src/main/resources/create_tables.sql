@@ -18,3 +18,14 @@ CREATE TABLE inventory.inventory
     quantity INT,
     PRIMARY KEY(id)
 );
+
+DROP TABLE IF EXISTS inventory.item_lines CASCADE;
+CREATE TABLE inventory.item_lines 
+(
+    id SERIAL,
+    product_color_id INT references inventory.product_color (id),
+    quantity INT,
+    price DECIMAL,
+    is_ordered BOOLEAN,
+    PRIMARY KEY(id)
+);

@@ -25,8 +25,8 @@ public class CozyHomePostgresFillerApplication {
 	 @Bean
 	  public CommandLineRunner loadData() {
 	      return args -> {
-//	    	  manager.createDataBase();
-	    	  manager.getInventory();
+	    	  manager.createDataBase();
+//	    	  manager.getInventory();
 	      };
 	  }	
 }

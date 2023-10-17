@@ -10,8 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.cozyhome.onlineshop.model.Inventory;
 import com.cozyhome.onlineshop.model.ProductColor;
+import com.cozyhome.onlineshop.model.BasketRecord;
 import com.cozyhome.onlineshop.repository.InventoryRepository;
+import com.cozyhome.onlineshop.repository.ItemLineRepository;
 import com.cozyhome.onlineshop.repository.ProductColorRepository;
+import com.cozyhome.onlineshop.repository.ShoppingCartRepository;
+import com.cozyhome.onlineshop.repository.UserRepository;
 import com.cozyhome.onlineshop.util.CellIndex;
 import com.cozyhome.onlineshop.util.DataReader;
 
@@ -26,6 +30,9 @@ public class PostgresBuilder {
 	private final DataReader reader;
 	private final ProductColorRepository productColorRepo;
 	private final InventoryRepository inventoryRepo;
+	private final ItemLineRepository shoppingCartRepo;
+	private final UserRepository userRepo;
+	private final ShoppingCartRepository cartRepo;
 
 	private Map<String, String> colors = new HashMap<>();
 	private List<Integer> colorIndexes = new ArrayList<>();
@@ -68,8 +75,8 @@ public class PostgresBuilder {
 		inventory.setProductColor(productColor);
 		inventory.setQuantity(new Random().nextInt(7));
 		inventoryRepo.save(inventory);
-		log.info("INVENTORY FOR PRODUCT_SKUCODE [" + productColor.getProductSkuCode()
-				+ "] WITH COLOR_HEX [" + productColor.getColorHex() + "]  SAVED.");
+		log.info("INVENTORY FOR PRODUCT_SKUCODE [" + productColor.getProductSkuCode() + "] WITH COLOR_HEX ["
+				+ productColor.getColorHex() + "]  SAVED.");
 	}
 
 	private ProductColor doBuildProductColor(String productSkuCode, String color) {
@@ -86,4 +93,16 @@ public class PostgresBuilder {
 		}
 		return savedProductColor;
 	}
+
+	public void buildBasket(ProductColor productColor, String userId) {
+		BasketRecord basketRecordToSave = BasketRecord.builder()
+				.productColor(productColor)
+				.quantity(new Random().nextInt(1,4))
+				.userId(userId)
+				.build();
+		BasketRecord basketRecordSaved = shoppingCartRepo.save(basketRecordToSave);
+		log.info("BASKET RECORD WITH SKU CODE [{}] AND COLOR HEX [{}] SAVED.", basketRecordSaved.getProductColor().getProductSkuCode(),
+				basketRecordSaved.getProductColor().getColorHex());
+	}
+	
 }
