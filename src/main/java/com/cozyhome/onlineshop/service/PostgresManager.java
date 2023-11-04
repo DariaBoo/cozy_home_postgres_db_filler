@@ -30,7 +30,8 @@ public class PostgresManager {
 	private String createDbFile = "/create_db.sql";
 	private String createUserFile = "/create_user.sql";
 	private String createTablesFile = "/create_tables.sql";
-	private String createTableShoppingCartLines = "/create_table_shopping_carts.sql";
+	private String createBasketTable = "/create_table_basket_items.sql";
+	private String createFavoriteTable = "/create_table_favorite_products.sql";
 
 	public void createDataBase() {
 		log.info("0 STEP[CREATE DATABASE]");
@@ -40,8 +41,8 @@ public class PostgresManager {
 
 //		builder.buildProductColorTable();
 //		fillInventory();
-		executer.executeSqlFromFile(createTableShoppingCartLines);
-		fillBasket();
+		executer.executeSqlFromFile(createFavoriteTable);
+		fillFavoriteProducts();
 	}
 
 	private void fillInventory() {
@@ -58,6 +59,15 @@ public class PostgresManager {
 			builder.buildBasket(productColor,users.get(new Random().nextInt(users.size())).getId());			
 		}		
 	}
+	
+	public void fillFavoriteProducts() {
+		List<ProductColor> productColorList = productColorRepo.findAll();
+		List<User> users = userRepo.findAll();
+		for (ProductColor productColor : productColorList) {
+			builder.buildFavoriteProducts(productColor,users.get(new Random().nextInt(users.size())).getId());			
+		}		
+	}
+	
 	public void getInventory() {
 		List<Inventory> list = inventoryRepo.findAll();
 		list.stream().forEach(System.out::println);

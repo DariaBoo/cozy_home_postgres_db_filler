@@ -14,8 +14,8 @@ import lombok.Data;
 @Data
 @Builder
 @Entity
-@Table(name = "basket_records")
-public class BasketRecord {
+@Table(name = "basket_items")
+public class BasketItem {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

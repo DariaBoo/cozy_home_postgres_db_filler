@@ -8,14 +8,14 @@ import java.util.Random;
 
 import org.springframework.stereotype.Component;
 
+import com.cozyhome.onlineshop.model.BasketItem;
+import com.cozyhome.onlineshop.model.FavoriteProduct;
 import com.cozyhome.onlineshop.model.Inventory;
 import com.cozyhome.onlineshop.model.ProductColor;
-import com.cozyhome.onlineshop.model.BasketRecord;
+import com.cozyhome.onlineshop.repository.BasketRepository;
+import com.cozyhome.onlineshop.repository.FavoriteProductRepository;
 import com.cozyhome.onlineshop.repository.InventoryRepository;
-import com.cozyhome.onlineshop.repository.ItemLineRepository;
 import com.cozyhome.onlineshop.repository.ProductColorRepository;
-import com.cozyhome.onlineshop.repository.ShoppingCartRepository;
-import com.cozyhome.onlineshop.repository.UserRepository;
 import com.cozyhome.onlineshop.util.CellIndex;
 import com.cozyhome.onlineshop.util.DataReader;
 
@@ -30,9 +30,8 @@ public class PostgresBuilder {
 	private final DataReader reader;
 	private final ProductColorRepository productColorRepo;
 	private final InventoryRepository inventoryRepo;
-	private final ItemLineRepository shoppingCartRepo;
-	private final UserRepository userRepo;
-	private final ShoppingCartRepository cartRepo;
+	private final BasketRepository basketRepo;
+	private final FavoriteProductRepository favoriteRepo;
 
 	private Map<String, String> colors = new HashMap<>();
 	private List<Integer> colorIndexes = new ArrayList<>();
@@ -95,13 +94,22 @@ public class PostgresBuilder {
 	}
 
 	public void buildBasket(ProductColor productColor, String userId) {
-		BasketRecord basketRecordToSave = BasketRecord.builder()
+		BasketItem basketItemToSave = BasketItem.builder()
 				.productColor(productColor)
 				.quantity(new Random().nextInt(1,4))
 				.userId(userId)
 				.build();
-		BasketRecord basketRecordSaved = shoppingCartRepo.save(basketRecordToSave);
-		log.info("BASKET RECORD WITH SKU CODE [{}] AND COLOR HEX [{}] SAVED.", basketRecordSaved.getProductColor().getProductSkuCode(),
-				basketRecordSaved.getProductColor().getColorHex());
+		BasketItem basketItemSaved = basketRepo.save(basketItemToSave);
+		log.info("BASKET RECORD WITH SKU CODE [{}] AND COLOR HEX [{}] SAVED.", basketItemSaved.getProductColor().getProductSkuCode(),
+				basketItemSaved.getProductColor().getColorHex());
 	}	
+	
+	public void buildFavoriteProducts(ProductColor productColor, String userId) {
+		FavoriteProduct itemToSave = new FavoriteProduct();
+		itemToSave.setProductColor(productColor);
+		itemToSave.setUserId(userId);
+		FavoriteProduct itemSaved = favoriteRepo.save(itemToSave);
+	
+		log.info("FAVORITE ITEM WITH SKU CODE [{}] AND COLOR HEX [{}] SAVED.", itemSaved.getProductColor().getProductSkuCode(), itemSaved.getProductColor().getColorHex());
+	}
 }
