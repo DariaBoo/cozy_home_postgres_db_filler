@@ -26,7 +26,6 @@ public class CozyHomePostgresFillerApplication {
 	  public CommandLineRunner loadData() {
 	      return args -> {
 	    	  manager.createDataBase();
-//	    	  manager.getInventory();
 	      };
 	  }	
 }
